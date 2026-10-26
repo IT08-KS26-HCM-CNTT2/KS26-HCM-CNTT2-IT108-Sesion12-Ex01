@@ -1,0 +1,56 @@
+
+PHẦN 1. PHÂN TÍCH: XÁC ĐỊNH RECORD VÀ FIELD
+Trong hệ thống cơ sở dữ liệu và bảng tính Excel của dự án ví điện tử "PayKX", 
+các khái niệm được xác định như sau:
+1. Field (Trường dữ liệu / Cột):
+   - Đại diện cho một thuộc tính cụ thể, đơn nhất của một giao dịch.
+   - Ví dụ các Field trong bảng đối soát:
+     + Transaction_ID (Mã giao dịch)
+     + Date (Ngày giờ giao dịch)
+     + User_ID (Mã người dùng)
+     + User_Name (Tên người dùng)
+     + Amount (Số tiền giao dịch)
+     + Status (Trạng thái giao dịch: Thành công / Thất bại)
+2. Record (Bản ghi / Dòng):
+   - Đại diện cho toàn bộ thông tin chi tiết của một giao dịch đơn lẻ hoàn chỉnh 
+     do một người dùng thực hiện tại một thời điểm cụ thể.
+   - Ví dụ một Record cụ thể (1 dòng dữ liệu):
+     + [TX1001 | 26/10/2026 14:30 | U052 | Nguyen Van A | 500,000 VND | Thanh cong]
+PHẦN 2. TRIỂN KHAI NỘI DUNG CÁC FILE (WORD, EXCEL, POWERPOINT)
+1. Tài liệu Word (SRS - Software Requirements Specification)
+   - Cấu trúc tài liệu (5 trang):
+     + Trang 1: Trang bìa (Tên dự án "PayKX", Thông tin nhóm/Trưởng dự án, Ngày tháng).
+     + Trang 2: Mục lục tự động (Auto TOC - sử dụng tính năng "Reference -> Table of Contents").
+     + Trang 3: Giới thiệu tổng quan hệ thống ví điện tử PayKX và mục tiêu tính năng hoàn tiền.
+     + Trang 4: Yêu cầu chức năng chi tiết (Phân cấp chuẩn bằng Heading 1, Heading 2 cho các module nạp/rút/hoàn tiền).
+     + Trang 5: Phụ lục, sơ đồ luồng dữ liệu (Data Flow) và thông tin hỗ trợ kỹ thuật.
+2. Bảng tính Excel (Đối soát giao dịch)
+   - Quy tắc tuân thủ Database: 
+     + Tuyệt đối không dùng "Merge Cell" trong vùng dữ liệu.
+     + Không để trống hàng hoặc cột giữa các bản ghi.
+   - Xử lý dữ liệu: Sử dụng hàm TRIM để làm sạch khoảng trắng thừa (Ví dụ: `=TRIM(A2)`).
+   - Công thức VLOOKUP tra cứu tên người dùng từ mã giao dịch:
+     + Giả sử bảng danh sách nằm ở cột A và B (A: Mã người dùng, B: Tên người dùng), ô chứa mã cần tra cứu là D2.
+     + Công thức chuẩn: =VLOOKUP(D2, A:B, 2, FALSE)
+     + Lưu ý: Bắt buộc dùng tham số FALSE (hoặc 0) để tìm kiếm chính xác tuyệt đối, tránh trả về kết quả sai lệch.
+3. Slide PowerPoint (Báo cáo doanh thu theo Rule 10/20/30)
+   - Quy tắc thiết kế: 
+     + Sử dụng font chữ tối thiểu 30pt.
+     + Trực quan hóa dữ liệu bằng biểu đồ cột/đường thay vì chèn bảng số liệu thô.
+   - Tiêu đề Slide dạng Assertion Title:
+     + Ví dụ: "Doanh thu ví điện tử PayKX tăng 15% nhờ ưu đãi nạp tiền điện thoại tháng này"
+PHẦN 3. KIỂM THỬ: XỬ LÝ LỖI #N/A TRONG VLOOKUP
+Khi hàm VLOOKUP trả về lỗi #N/A (nghĩa là không tìm thấy giá trị tra cứu), 
+cần thực hiện quy trình kiểm tra 4 điểm sau đây để tìm và khắc phục nguyên nhân:
+1. Kiểm tra khoảng trắng thừa (Leading/Trailing Spaces):
+   - Nguyên nhân: Dữ liệu gốc có chứa dấu cách ẩn ở đầu hoặc cuối (Ví dụ: "U052 " khác với "U052").
+   - Cách khắc phục: Dùng hàm =TRIM() để làm sạch cả ô chứa giá trị tìm kiếm và bảng dữ liệu nguồn.
+2. Kiểm tra định dạng dữ liệu (Data Type):
+   - Nguyên nhân: Một bên là định dạng Text (ký tự chữ) còn bên kia là định dạng Number (số), Excel không khớp được.
+   - Cách khắc phục: Chuyển đổi đồng nhất định dạng của cả 2 cột về dạng Text (thêm dấu nháy đơn `'` ở trước) hoặc dạng số chung.
+3. Kiểm tra phạm vi bảng dò (Table Array):
+   - Nguyên nhân: Vùng dữ liệu trong bảng nguồn chưa được cố định tuyệt đối bằng dấu đô-la ($), dẫn đến khi kéo công thức bị lệch vùng chọn.
+   - Cách khắc phục: Đảm bảo phạm vi bảng nguồn ở dạng tuyệt đối ($A$1:$B$100 thay vì A1:B100).
+4. Kiểm tra vị trí cột trả về (Col_index_num):
+   - Nguyên nhân: Số thứ tự cột nhập trong hàm VLOOKUP lớn hơn tổng số cột thực tế có trong bảng nguồn được chọn.
+   - Cách khắc phục: Đếm lại số cột từ trái sang phải trong bảng nguồn và điều chỉnh lại số thứ tự cột cho chính xác.
